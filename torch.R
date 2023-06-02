@@ -36,7 +36,7 @@ library(mirai)
 daemons(n = 4L, refhook = rf)
 daemons()
 
-out <- vector(mode = "list", length = 100L)
+out <- vector(mode = "list", length = 1000L)
 for (i in seq_len(1000)) {
   out[[i]] <- mirai(torch::torch_matmul(obj, torch::torch_tensor(sample.int(10, 3))), obj = obj[[2L]])
 }
