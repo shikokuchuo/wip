@@ -29,7 +29,7 @@ r
 
 # mirai example ----------------------------------------------------------------
 
-# requires mirai >= 0.9.0.9022
+# requires mirai >= 0.8.7.9022
 # install.packages("mirai", repos = "shikokuchuo.r-universe.dev")
 library(mirai)
 
