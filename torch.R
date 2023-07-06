@@ -45,3 +45,32 @@ data
 
 daemons()
 daemons(0)
+
+# no base64 encoding example ---------------------------------------------------
+
+serial <- list()
+
+rf <- function(x) {
+  if (inherits(x, "torch_tensor")) {
+    i <- length(serial) + 1L
+    serial[[i]] <<- torch:::cpp_tensor_save(x, FALSE)
+    as.character(i)
+  } else if (is.character(x)) {
+    torch:::cpp_tensor_load(serial[[as.integer(x)]], NULL, FALSE)
+  }
+}
+
+library(mirai)
+
+daemons(n = 4L, refhook = rf)
+daemons()
+
+out <- vector(mode = "list", length = 1000L)
+for (i in seq_len(1000)) {
+  out[[i]] <- mirai(torch::torch_matmul(obj, torch::torch_tensor(sample.int(10, 3))), serial = serial, obj = obj[[2L]])
+}
+data <- lapply(lapply(out, call_mirai), .subset2, "data")
+data
+
+daemons()
+daemons(0)
