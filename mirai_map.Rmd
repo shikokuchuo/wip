@@ -1,0 +1,75 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%"
+)
+```
+
+# mirai
+
+#### Comparison of `mirai::mirai_map()` with `purrr::map()`
+
+Setup:
+```{r map, error=TRUE}
+library(purrr)
+library(mirai)
+daemons(2)
+```
+Basic example (identical):
+```{r map1}
+1:10 |>
+  map(\(x) rnorm(10, x))
+
+1:10 |>
+  mirai_map(\(x) rnorm(10, x)) |>
+  collect_mirai()
+```
+With cli progress bar (identical):
+```{r map2}
+1:10 |>
+  map(\(x) {Sys.sleep(0.5); rnorm(10, x)}, .progress = TRUE)
+
+1:10 |>
+  mirai_map(\(x) {Sys.sleep(0.5); rnorm(10, x)}) |>
+  collect_mirai(.progress_cli)
+```
+Error handling (output currently not as rich):
+```{r map3, error=TRUE}
+1:10 |>
+  map(\(x) if (x != 10) rnorm(10, x) else rlang::abort("stopped", meta = "uid"))
+
+1:10 |>
+  mirai_map(\(x) if (x != 10) rnorm(10, x) else rlang::abort("stopped", meta = "uid")) |>
+  collect_mirai(.stop)
+```
+
+Additional async features:
+
+1. Can recover non-errored portions if not using early stopping:
+```{r map4}
+1:10 |>
+  mirai_map(\(x) if (x != 10) rnorm(10, x) else rlang::abort("stopped", meta = "uid")) |>
+  collect_mirai()
+
+```
+
+2. Retains information recorded in the error condition thrown:
+```{r map5}
+1:10 |>
+  mirai_map(\(x) if (x != 10) rnorm(10, x) else rlang::abort("stopped", meta = "uid")) |>
+  collect_mirai() |>
+  .subset2(10) |>
+  attr("meta")
+```
+
+3. Flatmap is an option:
+```{r map6}
+1:10 |>
+  mirai_map(\(x) {Sys.sleep(0.5); rnorm(10, x)}) |>
+  collect_mirai(.flat)
+```
