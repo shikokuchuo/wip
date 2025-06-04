@@ -1,0 +1,92 @@
+---
+title: "Crated Parallel Map Functions"
+output: html_document
+date: "2025-06-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(purrr)
+mirai::daemons(6)
+```
+
+The following code errors:
+```{r, error=TRUE}
+
+slow_lm <- function(formula, data) {
+  Sys.sleep(1)
+  lm(formula, data = data)
+}
+
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) slow_lm(mpg ~ disp, data = df), .parallel = TRUE)
+
+```
+
+
+Possible solutions:
+
+(1) Require manual crating of the anonymous function using:
+
+```{r}
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(carrier::crate(\(df) slow_lm(mpg ~ disp, data = df), slow_lm = slow_lm), .parallel = TRUE)
+```
+
+(2) Use the `.parallel` argument to pass a list:
+```{r}
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) slow_lm(mpg ~ disp, data = df), .parallel = list(slow_lm = slow_lm))
+```
+
+(3) Simplify slightly by allowing a vector of object names:
+```{r}
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) slow_lm(mpg ~ disp, data = df), .parallel = c("slow_lm"))
+```
+
+(4) Use a parallel scope whereby everything inside gets crated and also turns on parallel mapping:
+```{r, eval=FALSE}
+models <- parallel({
+  slow_lm <- slow_lm
+
+  mtcars |>
+    split(mtcars$cyl) |>
+    map(\(df) slow_lm(mpg ~ disp, data = df))
+})
+```
+
+Other considered solutions:
+
+1. Using the `...` argument of `purrr::map()`, which currently errors if used in the parallel case. However this creates a divergence in use vs. the non-parallel case - i.e. if the parallel case below (top) were to work, then the non-parallel case (bottom) would error.
+
+```{r, eval=FALSE}
+# add slow_lm to the auto crate env
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) slow_lm(mpg ~ disp, data = df), slow_lm = slow_lm, .parallel = TRUE)
+
+# pass slow_lm as an argument to the lambda (which would error)
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) slow_lm(mpg ~ disp, data = df), slow_lm = slow_lm)
+```
+
+2. Create a special case which automagically works for a single argument function to a single function call. However, it could make it confusing / difficult to reason with the code, if this then fails for an anonymous function for a more complex function call such as:
+
+```{r, eval=FALSE}
+models <- mtcars |>
+  split(mtcars$cyl) |>
+  map(\(df) {
+    x <- slow_lm(mpg ~ disp, data = df)
+    y <- slow_lm(mpg ~ disp, data = df)
+    list(x, y)
+  })
+```
