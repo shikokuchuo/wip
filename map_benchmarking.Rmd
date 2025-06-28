@@ -1,0 +1,74 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%"
+)
+```
+
+## purrr benchmarking
+
+### Comparison of `purrr::map(in_parallel())` with `furrr::future_map()`
+
+Setup (using 8 parallel processes):
+
+```{r setup}
+library(purrr)
+library(mirai)
+library(furrr)
+daemons(8)
+plan(multisession, workers = 8)
+```
+
+Use blog model fitting example:
+
+```{r example}
+slow_lm <- function(formula, data) {
+  Sys.sleep(0.1)  # Simulate computational complexity
+  lm(formula, data)
+}
+```
+
+Benchmark on mtcars:
+
+```{r mtcars}
+purrr_map <- function() {
+    mtcars |>
+    split(mtcars$cyl) |>
+    map(in_parallel(\(df) slow_lm(mpg ~ wt + hp, data = df), slow_lm = slow_lm))
+}
+
+furrr_map <- function() {
+  mtcars |>
+    split(mtcars$cyl) |>
+    future_map(\(df) slow_lm(mpg ~ wt + hp, data = df))
+}
+
+bench::mark(purrr_map(), furrr_map())
+```
+
+Benchmark on diamonds:
+
+```{r diamonds}
+purrr_map <- function(data = ggplot2::diamonds) {
+  data |>
+    split(data$color) |>
+    map(in_parallel(\(df) slow_lm(price ~ carat + clarity, data = df), slow_lm = slow_lm))
+}
+
+furrr_map <- function(data = ggplot2::diamonds) {
+  data |>
+    split(data$color) |>
+    future_map(\(df) slow_lm(price ~ carat + clarity, data = df))
+}
+
+bench::mark(purrr_map(), furrr_map())
+```
+
+```{r cleanup, include = FALSE}
+daemons(0)
+```
