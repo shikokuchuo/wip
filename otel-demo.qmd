@@ -25,7 +25,7 @@ docker run --rm --name jaeger \
 This can't just be set within an R session as needs to apply to all new processes.
 
 ```sh
-OTEL_TRACES_EXPORTER = "http"
+OTEL_TRACES_EXPORTER=http
 ```
 
 5. In R, install mirai, dev promises, dev Shiny. **promises and shiny builds TBU**
@@ -75,7 +75,7 @@ mirai otel vignette for interpretation: <https://mirai.r-lib.org/articles/v05-op
 
 4. Shiny / mirai integrated example **Currently not working - to be updated**
 
-Run any of the vignette demos at https://mirai.r-lib.org/articles/v02-promises.html, e.g.:
+Run any of the vignette demos at <https://mirai.r-lib.org/articles/v02-promises.html>, e.g.:
 
 ```r
 library(shiny)

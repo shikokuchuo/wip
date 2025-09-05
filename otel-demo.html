@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Docker Desktop will now show the running container with link to web UI at <a href="http://localhost:16686" class="uri">http://localhost:16686</a>.</p></li>
 <li><p>Add following line to <code>.Renviron</code> (may need sudo to modify). This can’t just be set within an R session as needs to apply to all new processes.</p></li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">OTEL_TRACES_EXPORTER</span> = <span class="st">"http"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">OTEL_TRACES_EXPORTER</span><span class="op">=</span>http</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ol start="5" type="1">
 <li>In R, install mirai, dev promises, dev Shiny. <strong>promises and shiny builds TBU</strong></li>
 </ol>
@@ -149,7 +149,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Expected results:</p>
 <ul>
 <li>3 <code>mirai::mirai</code> spans (2 show an error)</li>
-<li>1 <code>mirai::mirai</code>_map span</li>
+<li>1 <code>mirai::mirai_map</code> span</li>
 <li>1 <code>mirai::daemons</code> span</li>
 <li>2 <code>mirai::daemon</code> spans</li>
 </ul>
@@ -157,7 +157,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="4" type="1">
 <li>Shiny / mirai integrated example <strong>Currently not working - to be updated</strong></li>
 </ol>
-<p>Run any of the vignette demos at https://mirai.r-lib.org/articles/v02-promises.html, e.g.:</p>
+<p>Run any of the vignette demos at <a href="https://mirai.r-lib.org/articles/v02-promises.html" class="uri">https://mirai.r-lib.org/articles/v02-promises.html</a>, e.g.:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirai)</span>
