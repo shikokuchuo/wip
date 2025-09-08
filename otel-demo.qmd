@@ -204,7 +204,7 @@ In the Jaeger web UI <http://localhost:16686>:
 
 A `reactive_update` with 11 child spans.
 
-![](otel-screenshot.png)
+![](otel-jaeger.png)
 
 - Reactive update creates a mirai ExtendedTask, and initially returns
 - Evaluation of the mirai on daemon takes 1s
