@@ -3,7 +3,96 @@ title: "Otel Demonstration"
 format: html
 ---
 
-## Preparation
+## Preparation - For Pydantic Logfire
+
+1. Go to <https://pydantic.dev/logfire>, click Get Started. Choose data region, authorize with GitHub account.
+
+2. Create a new project. In settings click generate write token.
+
+3. Add these lines to `.Renviron`:
+
+```sh
+OTEL_TRACES_EXPORTER=http
+OTEL_EXPORTER_OTLP_ENDPOINT="https://logfire-us.pydantic.dev"
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=<your-write-token>"
+```
+* URL should use "eu" instead of "us" for the region if applicable
+
+~~
+
+Also add to `.Rprofile` (only required for dev Shiny version):
+
+```r
+options(shiny.otel.bind = "all")
+```
+~~
+
+4. In R, install mirai, dev promises, dev Shiny.
+
+```r
+pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@92584b2"))
+```
+
+## Demonstration - Using Pydantic Logfire
+
+1. Go to: <https://logfire-us.pydantic.dev>
+   (or <https://logfire-eu.pydantic.dev>)
+
+2. Select the project that was created and the `Live` view.
+
+3. Shiny / mirai integrated example
+
+Run any of the vignette demos at <https://mirai.r-lib.org/articles/v02-promises.html>, e.g.:
+
+```r
+library(shiny)
+library(bslib)
+library(mirai)
+
+ui <- page_fluid(
+  p("The time is ", textOutput("current_time", inline = TRUE)),
+  hr(),
+  numericInput("n", "Sample size (n)", 1000),
+  numericInput("delay", "Seconds to take for plot", 1),
+  input_task_button("btn", "Plot uniform distribution"),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session) {
+  output$current_time <- renderText({
+    invalidateLater(1000)
+    format(Sys.time(), "%H:%M:%S %p")
+  })
+
+  task <- ExtendedTask$new(
+    function(...) mirai({Sys.sleep(y); runif(x)}, ...)
+  ) |> bind_task_button("btn")
+
+  observeEvent(input$btn, task$invoke(x = input$n, y = input$delay))
+
+  output$plot <- renderPlot(hist(task$result()))
+
+}
+
+# run app using 1 local daemon
+daemons(1)
+
+# automatically shutdown daemons when app exits
+onStop(function() daemons(0))
+
+shinyApp(ui = ui, server = server)
+```
+
+Close app.
+
+See the spans appear on the live view.
+
+Click the pause button to pause the scrolling.
+
+![](otel-logfire.png)
+
+
+## Preparation - For Jaeger (local collection)
 
 1.  Download and install Docker Desktop from: <https://www.docker.com/products/docker-desktop/>.
 
@@ -43,7 +132,7 @@ options(shiny.otel.bind = "all")
 pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@92584b2"))
 ```
 
-## Demonstration
+## Demonstration - Using Jaeger
 
 1. Open up Docker Desktop.
 
