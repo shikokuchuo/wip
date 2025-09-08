@@ -31,12 +31,14 @@ OTEL_TRACES_EXPORTER=http
 5. In R, install mirai, dev promises, dev Shiny. **promises and shiny builds TBU**
 
 ```r
-pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@5e8e2ce"))
+pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@92584b2"))
 ```
 
 ## Demonstration
 
-1. Start up Jaeger in a terminal:
+1. Open up Docker Desktop.
+
+2. Start up Jaeger in a terminal:
 
 ```sh
 docker run --rm --name jaeger \
@@ -47,9 +49,9 @@ docker run --rm --name jaeger \
  -p 9411:9411 \
  jaegertracing/jaeger:2.9.0
 ```
-2. Open web UI: <http://localhost:16686>
+3. Open web UI: <http://localhost:16686>
 
-3. mirai-only example:
+4. mirai-only example:
 
 ```r
 library(mirai)
@@ -73,7 +75,7 @@ Expected results:
 
 mirai otel vignette for interpretation: <https://mirai.r-lib.org/articles/v05-opentelemetry.html>
 
-4. Shiny / mirai integrated example **Currently not working - to be updated**
+5. Shiny / mirai integrated example **Currently not working - to be updated**
 
 Run any of the vignette demos at <https://mirai.r-lib.org/articles/v02-promises.html>, e.g.:
 
