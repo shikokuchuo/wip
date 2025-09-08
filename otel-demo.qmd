@@ -30,7 +30,7 @@ options(shiny.otel.bind = "all")
 4. In R, install mirai, dev promises, dev Shiny.
 
 ```r
-pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@92584b2"))
+pak::pak(c("mirai", "rstudio/promises", "rstudio/shiny@feat/otel"))
 ```
 
 ## Demonstration - Using Pydantic Logfire
@@ -129,7 +129,7 @@ options(shiny.otel.bind = "all")
 5. In R, install mirai, dev promises, dev Shiny.
 
 ```r
-pak::pak(c("mirai", "rstudio/promises@bc1ca10", "rstudio/shiny@92584b2"))
+pak::pak(c("mirai", "rstudio/promises", "rstudio/shiny@feat/otel"))
 ```
 
 ## Demonstration - Using Jaeger
